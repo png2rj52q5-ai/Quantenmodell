@@ -53,7 +53,6 @@ def save_json(obj, path):
 
 def download_market_data(symbol=MARKET, period=PERIOD, interval=INTERVAL):
     import yfinance as yf
-    print(f">>> Lade {symbol} Daten von Yahoo Finance (period={period})...")
     df = yf.download(symbol, period=period, interval=interval, progress=False)
 
     if isinstance(df.columns, pd.MultiIndex):
@@ -86,7 +85,6 @@ def download_market_data(symbol=MARKET, period=PERIOD, interval=INTERVAL):
 
     df2 = df2.sort_values("Date").reset_index(drop=True)
 
-    print(f"   -> {len(df2)} Zeilen geladen")
     return df2
 
 
@@ -284,7 +282,6 @@ def calibrate_sigma(rho0, I_hat, P0, Hs, Ls, real_prices):
 # 10. Geasmmtausführung
 
 def main():
-    print("\n=== Quantum + OU Hybrid Master ===")
 
     # Daten Laden
     df_raw = download_market_data()
@@ -294,21 +291,17 @@ def main():
     feat = feat.iloc[-LOOKBACK_WINDOW:].reset_index(drop=True)
     df_raw = df_raw.iloc[-LOOKBACK_WINDOW:].reset_index(drop=True)
 
-    print("Features sample:\n", feat.head())
 
     # Einteilung in Zustände(Clustering)
     labels, centers = cluster_states(feat)
-    print("Cluster sizes:", np.bincount(labels))
 
     # log-Return berchenen und Preisoperator konstruieren
     lam_raw, lam_centered, lam_scaled = compute_lambdas(feat, labels)
     I_hat = np.diag(lam_scaled)
 
-    print("Λ scaled:", lam_scaled)
 
     # Ornstein & Uhlenbeck Prozess schätzen
     ou_params = estimate_ou_params(feat, labels)
-    print("OU params:", ou_params)
 
     # Dichtematrix zum Zeitpunkt t=0
     rho0 = initial_rho(labels)
@@ -331,7 +324,6 @@ def main():
         rho0, I_hat, P0, Hs, Ls, real_prices
     )
 
-    print(f"Optimierte Parameter: sigma_price={sigma_price}, sigma_rho={sigma_rho}")
 
     # Finale Simulation
     rhos, expectations, prices = simulate(
@@ -385,7 +377,6 @@ def main():
     }
     save_json(summary, os.path.join(DATA_DIR, "summary.json"))
 
-    print("\nFertig! Ergebnisse im Ordner:", DATA_DIR)
 
 if __name__ == "__main__":
     main()
