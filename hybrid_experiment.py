@@ -353,8 +353,5 @@ def main():
     plt.close()
 
 
-
-    print(">>> Experiment abgeschlossen")
-
 if __name__ == "__main__":
     main()
