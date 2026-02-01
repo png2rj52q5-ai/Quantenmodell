@@ -24,7 +24,7 @@ os.makedirs(DATA_DIR, exist_ok=True)
 SEED = 42
 np.random.seed(SEED)
 
-# — tuned for realism —
+# für eine realistische Dynamik
 LAMBDA_SCALE = 0.05
 MU_CLAMP = 0.001
 
